@@ -40,3 +40,15 @@ def fetch_rates(currency_pair, start_date, end_date):
         return results
     except Exception as e:
         raise Exception(f"FRED API 요청 실패: {e}")
+    
+from db.models import save_rates
+
+def fetch_and_save_all(start_date, end_date):
+    for currency_pair in SERIES_IDS.keys():
+        print(f"{currency_pair} 가져오는 중...")
+        try:
+            rates = fetch_rates(currency_pair, start_date, end_date)
+            save_rates(currency_pair, rates)
+            print(f"{currency_pair} 저장 완료 — {len(rates)}개")
+        except Exception as e:
+            print(f"{currency_pair} 실패: {e}")
