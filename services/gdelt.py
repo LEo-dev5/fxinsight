@@ -48,4 +48,5 @@ def fetch_news(keyword, date_str):
         return articles
 
     except Exception as e:
-        return []
+            print(f"에러: {e}")
+            return []
