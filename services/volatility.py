@@ -3,10 +3,17 @@ from datetime import datetime, timedelta
 from db.models import save_volatility
 
 def calculate_daily_volatility(currency_pair, date):
-    rates = get_rates(currency_pair, date, date)
-    if not rates:
+    from datetime import datetime, timedelta
+    prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    
+    today_rates = get_rates(currency_pair, date, date)
+    prev_rates = get_rates(currency_pair, prev_date, prev_date)
+    
+    if not today_rates or not prev_rates:
         return None
-    return 0.0
+    
+    change = abs(today_rates[0]["rate"] - prev_rates[0]["rate"]) / prev_rates[0]["rate"] * 100
+    return round(change, 4)
 
 def calculate_monthly_volatility(currency_pair, year, month):
     start = f"{year}-{month:02d}-01"
@@ -61,5 +68,17 @@ def calculate_and_save_all(year):
                 from datetime import datetime
                 date = datetime.strptime(f"{year}-W{week:02d}-1", "%Y-W%W-%w").strftime("%Y-%m-%d")
                 save_volatility(currency, date, "weekly", v)
+        
+        # 일별
+        from datetime import datetime, timedelta
+        start = datetime(year, 1, 1)
+        end = datetime(year, 12, 31)
+        current = start
+        while current <= end:
+            date_str = current.strftime("%Y-%m-%d")
+            v = calculate_daily_volatility(currency, date_str)
+            if v:
+                save_volatility(currency, date_str, "daily", v)
+            current += timedelta(days=1)
         
         print(f"{currency} 완료!")
