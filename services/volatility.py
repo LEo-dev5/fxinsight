@@ -4,15 +4,23 @@ from db.models import save_volatility
 
 def calculate_daily_volatility(currency_pair, date):
     from datetime import datetime, timedelta
-    prev_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    date_dt = datetime.strptime(date, "%Y-%m-%d")
+    
+    # 최대 3일 전까지 이전 영업일 찾기
+    prev_rate = None
+    for i in range(1, 4):
+        prev_date = (date_dt - timedelta(days=i)).strftime("%Y-%m-%d")
+        prev_rates = get_rates(currency_pair, prev_date, prev_date)
+        if prev_rates:
+            prev_rate = prev_rates[0]["rate"]
+            break
     
     today_rates = get_rates(currency_pair, date, date)
-    prev_rates = get_rates(currency_pair, prev_date, prev_date)
     
-    if not today_rates or not prev_rates:
+    if not today_rates or not prev_rate:
         return None
     
-    change = abs(today_rates[0]["rate"] - prev_rates[0]["rate"]) / prev_rates[0]["rate"] * 100
+    change = abs(today_rates[0]["rate"] - prev_rate) / prev_rate * 100
     return round(change, 4)
 
 def calculate_monthly_volatility(currency_pair, year, month):
