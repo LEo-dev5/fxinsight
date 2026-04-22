@@ -18,6 +18,16 @@
         .toggle-btn:last-child { border-right: none; }
         .toggle-btn.active { background: #2a2a2a; color: #ffffff; }
         #back-btn { font-size: 12px; color: #7eb8f7; cursor: pointer; padding: 5px 12px; border: 1px solid #333; border-radius: 6px; background: transparent; display: none; margin-right: 8px; }
+        #year-select {
+            background: #2a2a2a;
+            color: #ffffff;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
         #content { display: flex; flex: 1; overflow: hidden; }
         #heatmap-area { flex: 1; padding: 24px; overflow-y: auto; }
         #panel { width: 320px; border-left: 1px solid #2a2a2a; padding: 20px; overflow-y: auto; display: none; }
@@ -34,6 +44,12 @@
                 <div id="breadcrumb"><span>2024년 연간</span></div>
             </div>
             <div style="display:flex; align-items:center;">
+                <select id="year-select" onchange="changeYear(this.value)">
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024" selected>2024</option>
+                    <option value="2025">2025</option>
+                </select>
                 <button id="back-btn" onclick="goBack()">← 연간으로</button>
                 <div id="toggle-group">
                     <button class="toggle-btn active" onclick="setMode('monthly', this)">월</button>
@@ -93,6 +109,12 @@
             document.getElementById('breadcrumb').innerHTML = '<span>2024년 연간</span>';
             closePanel();
             fadeAndRender(() => renderHeatmap());
+        }
+
+        function changeYear(year) {
+            currentYear = parseInt(year);
+            document.getElementById('breadcrumb').innerHTML = `<span>${currentYear}년 연간</span>`;
+            goBack();
         }
 
         function renderHeatmap() {
