@@ -18,3 +18,9 @@ def volatility(currency_pair: str, period: str, year: int):
     
     data = get_volatility(currency_pair, period, start, end)
     return {"currency_pair": currency_pair, "period": period, "data": data}
+
+@router.get("/rates")
+def get_exchange_rates(currency_pair: str, start_date: str, end_date: str):
+    from db.models import get_rates
+    data = get_rates(currency_pair, start_date, end_date)
+    return {"currency_pair": currency_pair, "data": data}

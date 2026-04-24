@@ -33,7 +33,7 @@ def fetch_news(keyword, date_str):
             "format": "json"
         }
 
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=30)  # 10 → 30으로
         response.raise_for_status()
         data = response.json()
 
@@ -48,5 +48,5 @@ def fetch_news(keyword, date_str):
         return articles
 
     except Exception as e:
-            print(f"에러: {e}")
-            return []
+        print(f"에러: {e}")
+        return []
